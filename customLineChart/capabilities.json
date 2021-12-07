@@ -1,7 +1,7 @@
 {
     "dataRoles": [
         {
-            "displayName": "Category Data",
+            "displayName": "Axis",
             "name": "category",
             "kind": "Grouping"
         },
@@ -60,6 +60,9 @@
     },
     "dataViewMappings": [
         {
+            "conditions": [
+                { "category": { "max": 1 }, "measure": { "max": 10 } }
+            ],
             "categorical": {
                 "categories": {
                     "for": {

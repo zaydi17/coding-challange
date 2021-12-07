@@ -35,35 +35,104 @@ import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInst
 import VisualObjectInstance = powerbi.VisualObjectInstance;
 import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
-
+import * as d3 from "d3";
+type Selection<T extends d3.BaseType> = d3.Selection<T, any, any, any>;
 import { VisualSettings } from "./settings";
+
+
+/** This specifices the 'shape' of the data in each row. */
+interface ILineChartRow {
+    x: number,
+    y: number
+}
+
 export class Visual implements IVisual {
     private target: HTMLElement;
     private updateCount: number;
     private settings: VisualSettings;
-    private textNode: Text;
+    private svg: Selection<SVGElement>;
+    private container: Selection<SVGElement>;
+    // private chart: Selection<SVGElement>;
+    private textValue: Selection<SVGElement>;
+    private textLabel: Selection<SVGElement>;
 
     constructor(options: VisualConstructorOptions) {
         console.log('Visual constructor', options);
         this.target = options.element;
-        this.updateCount = 0;
-        if (document) {
-            const new_p: HTMLElement = document.createElement("p");
-            new_p.appendChild(document.createTextNode("Update count:"));
-            const new_em: HTMLElement = document.createElement("em");
-            this.textNode = document.createTextNode(this.updateCount.toString());
-            new_em.appendChild(this.textNode);
-            new_p.appendChild(new_em);
-            this.target.appendChild(new_p);
-        }
+        this.svg = d3.select(this.target)
+            .append('svg')
+            .classed('CustomLineChart', true);
+        this.container = this.svg.append('g')
+        // this.chart = this.container.append("path")
+        //     .classed('path', true);
+        this.textValue = this.container.append("text")
+            .classed("textValue", true);
+        this.textLabel = this.container.append("text")
+            .classed("textLabel", true);
+
+        // this.updateCount = 0;
+        // if (document) {
+        //     const new_p: HTMLElement = document.createElement("p");
+        //     new_p.appendChild(document.createTextNode("Update count:"));
+        //     const new_em: HTMLElement = document.createElement("em");
+        //     this.textNode = document.createTextNode(this.updateCount.toString());
+        //     new_em.appendChild(this.textNode);
+        //     new_p.appendChild(new_em);
+        //     this.target.appendChild(new_p);
+        // }
     }
 
+
     public update(options: VisualUpdateOptions) {
+        let dataView: DataView = options.dataViews[0];
+        let categorical = dataView.categorical
+        let width: number = options.viewport.width;
+        let height: number = options.viewport.height;
+        var margin = { top: 10, right: 30, bottom: 30, left: 60 };
+        this.svg.attr("width", width);
+        this.svg.attr("height", height);
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
         console.log('Visual update', options);
-        if (this.textNode) {
-            this.textNode.textContent = (this.updateCount++).toString();
-        }
+        this.container.selectAll('*').remove();
+        let data: ILineChartRow[] = categorical.categories[0].values.map(
+            (cat, idx) => (
+                {
+                    x: <number>cat,
+                    y: <number>categorical.values[0].values[idx]
+                }
+            )
+        );
+
+        var svg = this.container.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        data = data.slice().sort((a, b) => d3.ascending(a.x, b.x));
+        console.log(data);
+        // Add X axis --> it is a date format
+        var x = d3.scaleLinear()
+            .domain(d3.extent(data, function (d) { return d.x; }))
+            .range([0, width- margin.left - margin.right]);
+        svg.append("g")
+            .attr("transform", "translate(0," + (height- margin.top - margin.bottom) + ")")
+            .call(d3.axisBottom(x));
+
+        // Add Y axis
+        var y = d3.scaleLinear()
+            .domain([0, d3.max(data, function (d) { return +d.y; })])
+            .range([height- margin.top - margin.bottom, 0]);
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+        // Add the line
+        svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line<ILineChartRow>()
+                .x(function (d) { return x(d.x) })
+                .y(function (d) { return y(d.y) })
+            )
+
     }
 
     private static parseSettings(dataView: DataView): VisualSettings {
