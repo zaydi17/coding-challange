@@ -41,6 +41,7 @@ type Selection<T extends d3.BaseType> = d3.Selection<T, any, any, any>;
 import { VisualSettings } from "./settings";
 import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
 
+
 // import { VisualSettings } from "./settings";
 export class Visual implements IVisual {
     // private target: HTMLElement;
