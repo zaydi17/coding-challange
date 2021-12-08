@@ -1,1 +1,25 @@
-{"visual":{"name":"customLineChart","displayName":"CustomLineChart","guid":"customLineChart411F76C181664FDF99DEE7C8B0BB962C","visualClassName":"Visual","version":"1.0.0","description":"","supportUrl":"","gitHubUrl":""},"apiVersion":"3.8.0","author":{"name":"","email":""},"assets":{"icon":"assets/icon.png"},"externalJS":null,"style":"style/visual.less","capabilities":"capabilities.json","dependencies":null,"stringResources":[]}
+{
+    "visual": {
+        "name": "customLineChart",
+        "displayName": "Custom Line Chart",
+        "guid": "customLineChart411F76C181664FDF99DEE7C8B0BB962C",
+        "visualClassName": "Visual",
+        "version": "1.0.0",
+        "description": "This is a custom visual creating a line chart",
+        "supportUrl": "https://github.com/zaydi17/coding-challange",
+        "gitHubUrl": "https://github.com/zaydi17/coding-challange"
+    },
+    "apiVersion": "3.8.0",
+    "author": {
+        "name": "Max Muster",
+        "email": "max@mustermann.com"
+    },
+    "assets": {
+        "icon": "assets/cc.png"
+    },
+    "externalJS": null,
+    "style": "style/visual.less",
+    "capabilities": "capabilities.json",
+    "dependencies": null,
+    "stringResources": []
+}

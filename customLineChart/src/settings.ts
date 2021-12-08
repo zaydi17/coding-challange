@@ -41,16 +41,16 @@ export class dataPointSettings {
   // Label Size
   public fontSize: number = 12;
   // Point color
-  public pointColor: string = "red";
+  public pointColor: string = "blue";
   // Point Size
-  public pointSize: number = 12;
+  public pointSize: number = 4;
 }
 
 export class axisSettings {
   // Show all
   public showLabels: boolean = true;
   // Text Size
-  public fontSize: number = 12;
+  public fontSize: number = 18;
   // color
   public color: string = "black";
 }

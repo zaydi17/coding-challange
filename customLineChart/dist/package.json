@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "author": {"name":"Max Muster","email":"max@mustermann.com"},
+    "resources": [
+        {
+            "resourceId": "rId0",
+            "sourceType": 5,
+            "file": "resources/customLineChart411F76C181664FDF99DEE7C8B0BB962C.pbiviz.json"
+        }
+    ],
+    "visual": {"name":"customLineChart","displayName":"Custom Line Chart","guid":"customLineChart411F76C181664FDF99DEE7C8B0BB962C","visualClassName":"Visual","version":"1.0.0","description":"This is a custom visual creating a line chart","supportUrl":"https://github.com/zaydi17/coding-challange","gitHubUrl":"https://github.com/zaydi17/coding-challange"},
+    "metadata": {
+        "pbivizjson": {
+            "resourceId": "rId0"
+        }
+    }  
+}

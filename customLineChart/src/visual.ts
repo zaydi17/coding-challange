@@ -81,23 +81,19 @@ export class Visual implements IVisual {
     private pointSelection: d3.Selection<d3.BaseType, any, d3.BaseType, any>;
 
     constructor(options: VisualConstructorOptions) {
-        this.tooltipServiceWrapper = createTooltipServiceWrapper(options.host.tooltipService, options.element);
+        
         this.target = options.element;
         this.host = options.host;
+
+        //init tooltips and selection
+        this.tooltipServiceWrapper = createTooltipServiceWrapper(options.host.tooltipService, options.element);
         this.selectionManager = this.host.createSelectionManager();
 
-        // this.selectionManager.registerOnSelectCallback(() => {
-        //     this.syncSelectionState(this.pointSelection, <ISelectionId[]>this.selectionManager.getSelectionIds());
-        // });
-
+        //create d3 base container
         this.svg = d3.select(this.target)
             .append('svg')
             .classed('CustomLineChart', true);
         this.container = this.svg.append('g')
-        this.textValue = this.container.append("text")
-            .classed("textValue", true);
-        this.textLabel = this.container.append("text")
-            .classed("textLabel", true);
 
 
     }
@@ -109,7 +105,7 @@ export class Visual implements IVisual {
         let width: number = options.viewport.width;
         let height: number = options.viewport.height;
 
-        // filter data (not working)
+        //filter data (not working)
         let basicFilter = {
             target: {
                 column: categorical.categories[0]
@@ -119,8 +115,8 @@ export class Visual implements IVisual {
         }
         this.host.applyJsonFilter(basicFilter, "general", "filter", FilterAction.remove)
 
-        // set margins
-        var margin = { top: 10, right: 30, bottom: 50, left: 80 };
+        //set margins
+        var margin = { top: 10, right: 30, bottom: 50, left: 100 };
 
         this.svg.attr("width", width);
         this.svg.attr("height", height);
@@ -137,25 +133,25 @@ export class Visual implements IVisual {
         let data: IChartDataPoint[] = categorical.categories[0].values.map(
             (xVals, idx) => {
                 const selectionId: ISelectionId = this.host.createSelectionIdBuilder()
-                .withCategory(categorical.categories[0], idx)
-                .createSelectionId();
+                    .withCategory(categorical.categories[0], idx)
+                    .createSelectionId();
                 return {
                     x: <number>xVals,
                     y: <number>categorical.values[0].values[idx],
                     selectionId: selectionId
                 }
             }
-            
+
         );
 
         //sort x-axis ascendingly
         data = data.slice().sort((a, b) => d3.ascending(a.x, b.x));
 
-
+        //chart base
         var svg = this.container.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        // Add X axis
+        //Add X-axis
         var x = d3.scaleLinear()
             .domain(d3.extent(data, function (d) { return d.x; }))
             .range([0, width - margin.left - margin.right]);
@@ -164,7 +160,7 @@ export class Visual implements IVisual {
             .call(d3.axisBottom(x))
             .selectAll("text")
             .style("font-size", this.settings.dataPoint.fontSize);
-
+        //X-labels
         if (axisStyle.showLabels) {
             svg.append("text")
                 .attr("text-anchor", "end")
@@ -174,7 +170,7 @@ export class Visual implements IVisual {
                 .style("fill", axisStyle.color)
                 .text(this.xLabel);
         }
-        // Add Y axis
+        //Add Y-axis
         var y = d3.scaleLinear()
             .domain([0, d3.max(data, function (d) { return +d.y; })])
             .range([height - margin.top - margin.bottom, 0]);
@@ -183,6 +179,7 @@ export class Visual implements IVisual {
             .selectAll("text")
             .style("font-size", this.settings.dataPoint.fontSize);
 
+        //Y-labels
         if (axisStyle.showLabels) {
             svg.append("text")
                 .attr("text-anchor", "end")
@@ -205,7 +202,9 @@ export class Visual implements IVisual {
                 .x(function (d) { return x(d.x) })
                 .y(function (d) { return y(d.y) })
             )
-        svg.selectAll("myCircles")
+
+        //Draw circles for data points
+        svg.selectAll("addCircles")
             .data(data)
             .enter()
             .append("circle")
@@ -214,13 +213,16 @@ export class Visual implements IVisual {
             .attr("cx", function (d) { return x(d.x) })
             .attr("cy", function (d) { return y(d.y) })
             .attr("r", this.settings.dataPoint.pointSize)
-        //this.container.selectAll('path')
+
+        //add tooltips
         this.tooltipServiceWrapper.addTooltip(svg.selectAll('circle'),
             (data: IChartDataPoint) => this.getTooltipData(data),
             (data: IChartDataPoint) => data.x)
+
+        //add context menu
         this.svg.on('contextmenu', (event, d) => {
-            console.log("event:",event)
-            console.log("target:",event.target)
+            console.log("event:", event)
+            console.log("target:", event.target)
             let dataPoint: any = d3Select(<d3.BaseType>event.target).datum();
             console.log(dataPoint)
             this.selectionManager.showContextMenu(dataPoint ? dataPoint.selectionId : {}, {
@@ -236,7 +238,7 @@ export class Visual implements IVisual {
         return [{
             displayName: this.xLabel + ":\n"
                 + this.yLabel + ": \n",
-            header: 'Tooltip',
+            header: 'Datapoint',
             color: this.settings.dataPoint.pointColor,
             value: datapoint.x.toString() + "\n" + datapoint.y.toString()
         }];
@@ -246,36 +248,6 @@ export class Visual implements IVisual {
         return <VisualSettings>VisualSettings.parse(dataView);
     }
 
-    // private syncSelectionState(
-    //     selection: Selection<IChartDataPoint>,
-    //     selectionIds: ISelectionId[]
-    // ): void {
-    //     if (!selection || !selectionIds) {
-    //         return;
-    //     }
-
-    //     if (!selectionIds.length) {
-    //         const opacity: number = this.barChartSettings.generalView.opacity / 100;
-    //         selection
-    //             .style("fill-opacity", opacity)
-    //             .style("stroke-opacity", opacity);
-    //         return;
-    //     }
-
-    //     const self: this = this;
-
-    //     selection.each(function (barDataPoint: BarChartDataPoint) {
-    //         const isSelected: boolean = self.isSelectionIdInArray(selectionIds, barDataPoint.selectionId);
-
-    //         const opacity: number = isSelected
-    //             ? BarChart.Config.solidOpacity
-    //             : BarChart.Config.transparentOpacity;
-
-    //         d3Select(this)
-    //             .style("fill-opacity", opacity)
-    //             .style("stroke-opacity", opacity);
-    //     });
-    // }
 
     /**
      * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the

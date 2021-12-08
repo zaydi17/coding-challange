@@ -5,9 +5,9 @@ import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualC
 import DialogConstructorOptions = powerbiVisualsApi.extensibility.visual.DialogConstructorOptions;
 var powerbiKey: any = "powerbi";
 var powerbi: any = window[powerbiKey];
-var customLineChart411F76C181664FDF99DEE7C8B0BB962C_DEBUG: IVisualPlugin = {
-    name: 'customLineChart411F76C181664FDF99DEE7C8B0BB962C_DEBUG',
-    displayName: 'CustomLineChart',
+var customLineChart411F76C181664FDF99DEE7C8B0BB962C: IVisualPlugin = {
+    name: 'customLineChart411F76C181664FDF99DEE7C8B0BB962C',
+    displayName: 'Custom Line Chart',
     class: 'Visual',
     apiVersion: '3.8.0',
     create: (options: VisualConstructorOptions) => {
@@ -27,6 +27,6 @@ var customLineChart411F76C181664FDF99DEE7C8B0BB962C_DEBUG: IVisualPlugin = {
 if (typeof powerbi !== "undefined") {
     powerbi.visuals = powerbi.visuals || {};
     powerbi.visuals.plugins = powerbi.visuals.plugins || {};
-    powerbi.visuals.plugins["customLineChart411F76C181664FDF99DEE7C8B0BB962C_DEBUG"] = customLineChart411F76C181664FDF99DEE7C8B0BB962C_DEBUG;
+    powerbi.visuals.plugins["customLineChart411F76C181664FDF99DEE7C8B0BB962C"] = customLineChart411F76C181664FDF99DEE7C8B0BB962C;
 }
-export default customLineChart411F76C181664FDF99DEE7C8B0BB962C_DEBUG;
+export default customLineChart411F76C181664FDF99DEE7C8B0BB962C;
